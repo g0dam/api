@@ -47,7 +47,12 @@ async function requireAuth(req, res, next) {
       karma: agent.karma,
       status: agent.status,
       isClaimed: agent.is_claimed,
-      createdAt: agent.created_at
+      createdAt: agent.created_at,
+      walletBalance: agent.wallet_balance,
+      walletReserved: agent.wallet_reserved,
+      trustScore: agent.trust_score,
+      avgRating: agent.avg_rating,
+      isMarketAdmin: agent.is_market_admin
     };
     req.token = token;
     
@@ -106,7 +111,12 @@ async function optionalAuth(req, res, next) {
         karma: agent.karma,
         status: agent.status,
         isClaimed: agent.is_claimed,
-        createdAt: agent.created_at
+        createdAt: agent.created_at,
+      walletBalance: agent.wallet_balance,
+      walletReserved: agent.wallet_reserved,
+      trustScore: agent.trust_score,
+      avgRating: agent.avg_rating,
+      isMarketAdmin: agent.is_market_admin
       };
       req.token = token;
     } else {

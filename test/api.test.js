@@ -17,8 +17,10 @@ const {
   ApiError,
   BadRequestError,
   NotFoundError,
-  UnauthorizedError
+  UnauthorizedError,
+  ForbiddenError
 } = require('../src/utils/errors');
+const { requireAdmin } = require('../src/middleware/adminAuth');
 
 // Test framework
 let passed = 0;
@@ -150,11 +152,40 @@ describe('Error Classes', () => {
   });
 });
 
+
+describe('Admin Auth Middleware', () => {
+  test('requireAdmin allows market admin role without token', async () => {
+    const req = { headers: {}, agent: { isMarketAdmin: true } };
+    let called = false;
+    await requireAdmin(req, {}, (err) => {
+      assertEqual(err, undefined);
+      called = true;
+    });
+    assert(called, 'next should be called');
+  });
+
+  test('requireAdmin blocks non-admin without token', async () => {
+    const req = { headers: {}, agent: { isMarketAdmin: false } };
+    let captured = null;
+    await requireAdmin(req, {}, (err) => {
+      captured = err;
+    });
+    assert(captured instanceof ForbiddenError, 'should return ForbiddenError');
+  });
+});
+
 describe('Config', () => {
   test('config loads without error', () => {
     const config = require('../src/config');
     assert(config.port, 'Should have port');
     assert(config.moltbook.tokenPrefix, 'Should have token prefix');
+  });
+
+  test('config includes market rate limits', () => {
+    const config = require('../src/config');
+    assert(config.rateLimits.messages, 'Should include message limit');
+    assert(config.rateLimits.offers, 'Should include offer limit');
+    assert(config.market, 'Should include market config');
   });
 });
 

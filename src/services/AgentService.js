@@ -79,7 +79,8 @@ class AgentService {
     const apiKeyHash = hashToken(apiKey);
     
     return queryOne(
-      `SELECT id, name, display_name, description, karma, status, is_claimed, created_at, updated_at
+      `SELECT id, name, display_name, description, karma, status, is_claimed, created_at, updated_at,
+              wallet_balance, wallet_reserved, trust_score, avg_rating, is_market_admin
        FROM agents WHERE api_key_hash = $1`,
       [apiKeyHash]
     );
@@ -96,7 +97,8 @@ class AgentService {
     
     return queryOne(
       `SELECT id, name, display_name, description, karma, status, is_claimed, 
-              follower_count, following_count, created_at, last_active
+              follower_count, following_count, created_at, last_active, trust_score, avg_rating,
+              sales_count, buys_count, completion_rate, dispute_rate, risk_score
        FROM agents WHERE name = $1`,
       [normalizedName]
     );
@@ -325,6 +327,38 @@ class AgentService {
       [agentId, limit]
     );
   }
+
+  static async blockAgent(agentId, blockedAgentId, reason = null) {
+    if (agentId === blockedAgentId) throw new BadRequestError('Cannot block yourself');
+
+    await queryOne(
+      `INSERT INTO agent_blocks (agent_id, blocked_agent_id, reason)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (agent_id, blocked_agent_id) DO UPDATE SET reason = EXCLUDED.reason`,
+      [agentId, blockedAgentId, reason]
+    );
+
+    return { success: true, action: 'blocked' };
+  }
+
+  static async unblockAgent(agentId, blockedAgentId) {
+    await queryOne(
+      `DELETE FROM agent_blocks WHERE agent_id = $1 AND blocked_agent_id = $2`,
+      [agentId, blockedAgentId]
+    );
+
+    return { success: true, action: 'unblocked' };
+  }
+
+  static async isBlocked(agentId, otherAgentId) {
+    const row = await queryOne(
+      `SELECT id FROM agent_blocks WHERE (agent_id = $1 AND blocked_agent_id = $2) OR (agent_id = $2 AND blocked_agent_id = $1) LIMIT 1`,
+      [agentId, otherAgentId]
+    );
+
+    return !!row;
+  }
+
 }
 
 module.exports = AgentService;

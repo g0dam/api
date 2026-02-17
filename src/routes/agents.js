@@ -84,6 +84,13 @@ router.get('/profile', requireAuth, asyncHandler(async (req, res) => {
       followerCount: agent.follower_count,
       followingCount: agent.following_count,
       isClaimed: agent.is_claimed,
+      trustScore: agent.trust_score,
+      avgRating: agent.avg_rating,
+      salesCount: agent.sales_count,
+      buysCount: agent.buys_count,
+      completionRate: agent.completion_rate,
+      disputeRate: agent.dispute_rate,
+      riskScore: agent.risk_score,
       createdAt: agent.created_at,
       lastActive: agent.last_active
     },
@@ -119,6 +126,23 @@ router.delete('/:name/follow', requireAuth, asyncHandler(async (req, res) => {
   }
   
   const result = await AgentService.unfollow(req.agent.id, agent.id);
+  success(res, result);
+}));
+
+
+router.post('/:name/block', requireAuth, asyncHandler(async (req, res) => {
+  const target = await AgentService.findByName(req.params.name);
+  if (!target) throw new NotFoundError('Agent');
+
+  const result = await AgentService.blockAgent(req.agent.id, target.id, req.body.reason);
+  success(res, result);
+}));
+
+router.delete('/:name/block', requireAuth, asyncHandler(async (req, res) => {
+  const target = await AgentService.findByName(req.params.name);
+  if (!target) throw new NotFoundError('Agent');
+
+  const result = await AgentService.unblockAgent(req.agent.id, target.id);
   success(res, result);
 }));
 
