@@ -151,9 +151,30 @@ const commentLimiter = rateLimit('comments', {
   message: 'Too many comments, slow down'
 });
 
+
+const messageLimiter = rateLimit('messages', {
+  message: 'Too many messages in a short time'
+});
+
+const offerLimiter = rateLimit('offers', {
+  message: 'Too many offers this hour'
+});
+
+const conversationStartLimiter = rateLimit('conversations', {
+  message: 'Too many conversation starts today'
+});
+
+const listingLimiter = rateLimit('listings', {
+  message: 'Listing creation daily limit reached'
+});
+
 module.exports = {
   rateLimit,
   requestLimiter,
   postLimiter,
-  commentLimiter
+  commentLimiter,
+  messageLimiter,
+  offerLimiter,
+  conversationStartLimiter,
+  listingLimiter
 };

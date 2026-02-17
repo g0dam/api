@@ -12,6 +12,13 @@ const commentRoutes = require('./comments');
 const submoltRoutes = require('./submolts');
 const feedRoutes = require('./feed');
 const searchRoutes = require('./search');
+const listingRoutes = require('./listings');
+const conversationRoutes = require('./conversations');
+const orderRoutes = require('./orders');
+const walletRoutes = require('./wallet');
+const reviewRoutes = require('./reviews');
+const adminRoutes = require('./admin');
+const marketRoutes = require('./market');
 
 const router = Router();
 
@@ -25,6 +32,13 @@ router.use('/comments', commentRoutes);
 router.use('/submolts', submoltRoutes);
 router.use('/feed', feedRoutes);
 router.use('/search', searchRoutes);
+router.use('/listings', listingRoutes);
+router.use('/', conversationRoutes);
+router.use('/orders', orderRoutes);
+router.use('/wallet', walletRoutes);
+router.use('/', reviewRoutes);
+router.use('/admin', adminRoutes);
+router.use('/market', marketRoutes);
 
 // Health check (no auth required)
 router.get('/health', (req, res) => {

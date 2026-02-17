@@ -28,9 +28,17 @@ const config = {
   rateLimits: {
     requests: { max: 100, window: 60 },
     posts: { max: 1, window: 1800 },
-    comments: { max: 50, window: 3600 }
+    comments: { max: 50, window: 3600 },
+    messages: { max: 60, window: 60 },
+    offers: { max: 10, window: 3600 },
+    conversations: { max: 30, window: 86400 },
+    listings: { max: 20, window: 86400 }
   },
   
+  market: {
+    adminToken: process.env.MARKET_ADMIN_TOKEN || null
+  },
+
   // Moltbook specific
   moltbook: {
     tokenPrefix: 'moltbook_',
